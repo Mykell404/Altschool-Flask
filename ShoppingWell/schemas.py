@@ -1,5 +1,7 @@
 from marshmallow import Schema, fields
 
+# Schema performs serialization on your data
+
 
 class PlainItemSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -25,3 +27,9 @@ class ItemSchema(PlainItemSchema):
 
 class StoreSchema(PlainStoreSchema):
     items = fields.List(fields.Nested(PlainItemSchema()), dump_only=True)
+
+
+class UserSchema(Schema):
+    id = fields.Str(dump_only=True)
+    username = fields.Str(required=True)
+    password = fields.Str(required=True)

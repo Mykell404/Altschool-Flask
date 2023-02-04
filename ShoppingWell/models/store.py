@@ -1,4 +1,5 @@
 from db import db
+# Creating the store model
 
 
 class StoreModel(db.Model):
