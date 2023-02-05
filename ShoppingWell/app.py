@@ -6,6 +6,7 @@ from flask_jwt_extended import JWTManager
 from resources.store import blp as StoreBlueprint
 from resources.item import blp as ItemBlueprint
 from resources.user import blp as UserBlueprint
+from datetime import timedelta
 
 
 # Todo: create a init file for resources
@@ -23,6 +24,9 @@ def create_app(db_url=None):
         "DATABASE_URL", "sqlite:///data.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = "micheal"
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
+
     db.init_app(app)
 
     api = Api(app)
