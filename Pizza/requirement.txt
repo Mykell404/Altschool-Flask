@@ -11,6 +11,7 @@ jsonschema==4.17.3
 MarkupSafe==2.1.2
 pycodestyle==2.10.0
 pyrsistent==0.19.3
+python-decouple==3.7
 python-dotenv==0.21.1
 pytz==2022.7.1
 tomli==2.0.1

@@ -9,7 +9,27 @@ Resource are like MethodView
 """
 
 
-@auth_namespace.route('/')
-class HelloAuth(Resource):
-    def get(self):
-        return {"message": "Nice to meet you"}
+@auth_namespace.route('/signup')
+class SignUp(Resource):
+    """
+    This is the signup route
+    """
+
+    def post(self):
+        """
+        Sign up a user
+        """
+        pass
+
+
+@auth_namespace.route('/login')
+class Login(Resource):
+    """
+    This is the login route
+    """
+
+    def post(self):
+        """
+        Login a user and generate JWT token
+        """
+        pass
