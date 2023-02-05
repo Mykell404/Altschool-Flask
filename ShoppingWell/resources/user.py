@@ -4,8 +4,10 @@ from flask_smorest import Blueprint, abort
 from passlib.hash import pbkdf2_sha256
 from models import UserModel
 from db import db
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, create_refresh_token
+from datetime import timedelta
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, create_refresh_token, get_jwt
 from schemas import UserSchema
+from blocklist import BLOCKLIST
 
 blp = Blueprint("Users", __name__, description="Operations on User")
 
@@ -18,6 +20,7 @@ register:
   save hash user password
 
 """
+# TODO: Find out different ways to logout a user
 
 
 @blp.route("/register")
@@ -115,6 +118,20 @@ class Login(MethodView):
 # This to get the refresh token for the user
 # This is a like a "Remember me route"
 
+"""
+The aim of the refresh route is to keep 
+users logged in without typing name and 
+password again.
+
+Refresh is a separate route that creates a new
+access token each time
+
+The refresh token itself is created on login and can be set
+to last for a while, but it can't be used by itself
+to authencticate the user.
+"""
+
+
 @blp.route("/refresh")
 class TokenRefresh(MethodView):
     @jwt_required(refresh=True)  # Takes only the refresh token
@@ -126,3 +143,17 @@ class TokenRefresh(MethodView):
         new_token = create_access_token(identity=current_user, fresh=False)
 
         return {"access_token": new_token}
+
+# This route is to logout users
+
+
+@blp.route("/logout")
+class Logout(MethodView):
+    @jwt_required()
+    def post(self):
+
+        # This will return the python dictionary which has the payload of the JWT that is accessing the endpoint
+        jti = get_jwt()['jti']
+        # Add this jti to the Blocklist
+        BLOCKLIST.add(jti)
+        return ({"message": "Successfully logged out"})

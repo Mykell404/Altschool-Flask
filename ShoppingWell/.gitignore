@@ -1,3 +1,5 @@
 minishop/
 .idea/
 instance/
+data.db
+.DS_Store
