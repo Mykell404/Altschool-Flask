@@ -6,6 +6,21 @@ from schemas import StoreSchema
 from sqlalchemy.exc import SQLAlchemyError
 
 blp = Blueprint("Stores", __name__, description="Operations on Stores")
+"""
+Create the Store blueprint
+
+get:
+    get store
+    return store
+
+delete:
+    get items
+    loop through items
+    delete items
+
+    get store
+    delete store
+"""
 
 
 @blp.route("/stores/<int:store_id>")
@@ -25,6 +40,19 @@ class Store(MethodView):
         db.session.commit()
 
         return {"message": "Store deleted"}
+
+
+"""
+StoreList
+
+get:
+    query the store model
+
+post:
+    save the StoreModel
+    commit the saved store to db
+
+"""
 
 
 @blp.route("/stores")
