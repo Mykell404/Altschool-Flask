@@ -7,6 +7,7 @@ from .utils import db
 from .models.orders import Order
 from .models.users import User
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 
 # Initial app setup
 
@@ -19,8 +20,11 @@ def create_app(config=config_dict['dev']):
 
     db.init_app(app)
 
+    jwt = JWTManager(app)
+
     api = Api(app)
 
+    # Migrate helps make changes to the db without having to delete the db
     migrate = Migrate(app, db)
 
     # Configuring Api Route
