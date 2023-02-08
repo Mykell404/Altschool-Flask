@@ -2,7 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from flask import request
 from ..models.users import User
 from http import HTTPStatus
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 
 auth_namespace = Namespace("auth", description="namespace for authentication")
@@ -15,8 +15,8 @@ Resource are like MethodView
 
 signup_model = auth_namespace.model(
     # This is a Schema (Serializer) for the signup model
+    # The model comes from the namespace
     'SignUp', {
-        'id': fields.Integer(),
         'username': fields.String(required=True, description='A username'),
         'email': fields.String(required=True, description='An email'),
         'password': fields.String(required=True, description='A password'),
@@ -62,9 +62,12 @@ class SignUp(Resource):
         new_user = User(
             username=data.get('username'),
             email=data.get('email'),
+            # generate a password hash to be saved in the dbs
             password_hash=generate_password_hash(data.get('password'))
         )
         new_user.save()
+
+        # TODO: Read up on HTTPStatus Code
 
         return new_user, HTTPStatus.CREATED
 
@@ -79,7 +82,7 @@ class Login(Resource):
         """
         Login a user and generate JWT token
         """
-        data = request.get_json()  # Get user data
+        data = request.get_json()  # Get user data in json form
 
         email = data.get('email')
         password = data.get('password')
@@ -100,3 +103,15 @@ class Login(Resource):
             }
 
             return response, HTTPStatus.CREATED
+
+
+@auth_namespace.route('/refresh')
+class Refresh(Resource):
+    @jwt_required(refresh=True)  # Requires the user to be logged in
+    def post(self):
+        username = get_jwt_identity()
+
+        # Create a new access token with the refresh token
+        access_token = create_access_token(identity=username)
+
+        return {"access_token": access_token}
