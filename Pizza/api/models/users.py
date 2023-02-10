@@ -29,5 +29,9 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
-
-    
+    @classmethod
+    def get_by_id(self, id):
+        """
+        Get the order by id
+        """
+        return self.query.get_or_404(id)
