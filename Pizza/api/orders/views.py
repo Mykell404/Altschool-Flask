@@ -2,6 +2,7 @@ from flask_restx import Namespace, Resource, fields
 from ..models.orders import Order
 from ..models.users import User
 from http import HTTPStatus
+from ..utils import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
@@ -17,6 +18,13 @@ order_model = order_namespace.model(
         'size': fields.String(description='Size of order', required=True, enum=['SMALL', 'MEDIUM', 'LARGE', 'EXTRA_LARGE']),
         'order_status': fields.String(description='The status of our order', required=True, enum=['PENDING', 'IN_TRANSIT', 'DELIVERED']),
         'flavour': fields.String(description='The flavour of the pizza', required=True)
+    }
+)
+
+order_status_model = order_namespace.model(
+    # Order Status Schema (Serializer)
+    'OrderStatus', {
+        'order_status': fields.String(description='The status of our order', required=True, enum=['PENDING', 'IN_TRANSIT', 'DELIVERED']),
     }
 )
 
@@ -74,17 +82,36 @@ class GetUpdateDelete(Resource):
         order = Order.get_by_id(order_id)
         return order, HTTPStatus.OK
 
+    @order_namespace.expect(order_model)
+    @order_namespace.marshal_with(order_model)
+    @jwt_required()
     def put(self, order_id):
         """
         Update an order by id
         """
-        pass
+        order_to_update = Order.get_by_id(order_id)
 
+        data = order_namespace.payload
+
+        order_to_update.quantity = data['quantity']
+        order_to_update.size = data['size']
+        order_to_update.order_status = data['order_status']
+        order_to_update.flavour = data['flavour']
+
+        order_to_update.update()
+
+        return order_to_update, HTTPStatus.CREATED
+
+    @jwt_required()
     def delete(self, order_id):
         """
         Delete an order by id
         """
-        pass
+        order_to_delete = Order.get_by_id(order_id)
+
+        order_to_delete.delete()
+
+        return {"message": "Deleted sucessfully"}, HTTPStatus.OK
 
 
 @order_namespace.route('/user/<int:user_id>/order/<int:order_id>')
@@ -126,8 +153,18 @@ class UserOrder(Resource):
 
 @order_namespace.route('/order/status/<int:order_id>')
 class UpdateOrderStatus(Resource):
+    @order_namespace.expect(order_status_model)
+    @order_namespace.marshal_with(order_model)
     def patch(self, order_id):
         """
         Update an order status
         """
-        pass
+        data = order_namespace.payload
+
+        order_to_update = Order.get_by_id(order_id)
+
+        order_to_update.order_status = data['order_status']
+
+        order_to_update.update()
+
+        return order_to_update, HTTPStatus.OK

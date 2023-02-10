@@ -44,3 +44,16 @@ class Order(db.Model):
         Get the order by id
         """
         return self.query.get_or_404(id)
+
+    def delete(self):
+        """
+        Delete the order
+        """
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        """
+        Update the order
+        """
+        db.session.commit()

@@ -115,3 +115,6 @@ class Refresh(Resource):
         access_token = create_access_token(identity=username)
 
         return {"access_token": access_token}
+
+
+# TODO: Implement Logout
