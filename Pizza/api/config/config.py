@@ -6,10 +6,12 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class Config:
-    SECRET_KEY = config('SECRET_KEY', 'secret')  # Import secret key from .env file
+    # Import secret key from .env file
+    SECRET_KEY = config('SECRET_KEY', 'secret')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=60)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(hours=4)
-    JWT_SECRET_KEY = config('JWT_SECRET_KEY', 'secret') # Import secret key from .env file
+    # Import secret key from .env file
+    JWT_SECRET_KEY = config('JWT_SECRET_KEY', 'secret')
 
 
 class DevConfig(Config):
@@ -26,7 +28,10 @@ class TestConfig(Config):
     """
     This handles the configuration files when we want to test our code
     """
-    pass
+    TESTING = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 
 class ProdConfig(Config):

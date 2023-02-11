@@ -153,6 +153,7 @@ class UserOrder(Resource):
 
 @order_namespace.route('/order/status/<int:order_id>')
 class UpdateOrderStatus(Resource):
+    @jwt_required()
     @order_namespace.expect(order_status_model)
     @order_namespace.marshal_with(order_model)
     def patch(self, order_id):

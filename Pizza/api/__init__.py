@@ -8,6 +8,7 @@ from .models.orders import Order
 from .models.users import User
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
+from werkzeug.exceptions import NotFound, MethodNotAllowed, Unauthorized
 
 # Initial app setup
 
@@ -30,6 +31,18 @@ def create_app(config=config_dict['dev']):
     # Configuring Api Route
     api.add_namespace(order_namespace)
     api.add_namespace(auth_namespace)
+
+    @api.errorhandler(NotFound)
+    def not_found(error):
+        return {"error": "Not Found"}, 404
+
+    @api.errorhandler(MethodNotAllowed)
+    def method_not_allowed(error):
+        return {"error": "Method Not Allowed"}, 405
+
+    @api.errorhandler(Unauthorized)
+    def unauthorized(error):
+        return {"error": "Unauthorized"}, 401
 
     @app.shell_context_processor
     # This create the application context and the app instance will be imported into the shell.
