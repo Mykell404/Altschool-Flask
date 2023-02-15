@@ -53,7 +53,7 @@ class UserTestCase(unittest.TestCase):
 
         data = {
             "email": "testt@gmail.com",
-            "password": "password"
+            "password": "pssword"
         }
         response = self.client.post('/auth/login', json=data)
 
